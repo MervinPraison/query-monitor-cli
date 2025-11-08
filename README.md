@@ -1,77 +1,213 @@
 # Query Monitor CLI
 
-WP-CLI commands and REST API endpoints for Query Monitor debugging.
+**WP-CLI commands and REST API endpoints for Query Monitor debugging**
 
-## Description
+[![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-blue.svg)](https://wordpress.org/)
+[![PHP](https://img.shields.io/badge/PHP-7.4%2B-purple.svg)](https://php.net/)
+[![License](https://img.shields.io/badge/License-GPL%20v2-green.svg)](LICENSE)
+
+---
+
+## 📋 Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [WP-CLI Commands](#wp-cli-commands)
+- [REST API Endpoints](#rest-api-endpoints)
+- [Usage Examples](#usage-examples)
+- [Command Reference](#command-reference)
+- [Use Cases](#use-cases)
+- [Integration Examples](#integration-examples)
+- [Architecture](#architecture)
+- [Troubleshooting](#troubleshooting)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [Changelog](#changelog)
+- [License](#license)
+
+---
+
+## 🎯 Overview
 
 Query Monitor CLI extends the popular [Query Monitor](https://wordpress.org/plugins/query-monitor/) plugin by providing command-line and REST API access to its powerful debugging features. Monitor database queries, profile performance, track HTTP requests, and more - all from the command line or via REST API.
 
-## Requirements
+### Why Query Monitor CLI?
 
-- WordPress 6.0 or higher
-- PHP 7.4 or higher
-- WP-CLI 2.5 or higher (for CLI commands)
-- Query Monitor 3.16 or higher (required dependency)
+**Problem**: Query Monitor provides debugging information only through browser-based interfaces, making it unavailable for:
+- CLI-based development workflows
+- Automated testing scripts
+- Headless WordPress applications
+- CI/CD pipelines
+- Remote debugging scenarios
 
-## Installation
+**Solution**: Query Monitor CLI bridges this gap by exposing all Query Monitor collectors through WP-CLI commands and REST API endpoints, enabling:
+- ✅ Command-line debugging during development
+- ✅ Automated performance testing
+- ✅ CI/CD integration for quality gates
+- ✅ Remote monitoring via REST API
+- ✅ Headless WordPress debugging
 
-### Via WP-CLI
+---
 
-```bash
-# Install Query Monitor first
-wp plugin install query-monitor --activate
-
-# Clone this repository
-cd wp-content/plugins
-git clone https://github.com/praison/query-monitor-cli.git
-
-# Activate the plugin
-wp plugin activate query-monitor-cli
-```
-
-### Manual Installation
-
-1. Install and activate [Query Monitor](https://wordpress.org/plugins/query-monitor/)
-2. Download this plugin
-3. Upload to `wp-content/plugins/query-monitor-cli`
-4. Activate via WordPress admin or WP-CLI
-
-## Features
-
-### ✅ WP-CLI Commands
-
-Access Query Monitor data directly from the command line:
-
-- **`wp qm env`** - Display environment information (PHP, WordPress, Database)
-- **`wp qm db`** - Monitor database queries
-- **`wp qm profile`** - Profile command performance
-- **`wp qm http`** - Monitor HTTP requests
-- **`wp qm hooks`** - Track WordPress hooks
-- **`wp qm errors`** - Monitor PHP errors
-
-### ✅ REST API Endpoints
-
-Access Query Monitor data via REST API:
-
-- **`GET /wp-json/query-monitor/v1/environment`** - Environment information
-- **`POST /wp-json/query-monitor/v1/database`** - Database queries
-- **`POST /wp-json/query-monitor/v1/profile`** - Performance profile
-- **`POST /wp-json/query-monitor/v1/http`** - HTTP requests
-- **`POST /wp-json/query-monitor/v1/hooks`** - Hooks information
-- **`POST /wp-json/query-monitor/v1/errors`** - PHP errors
-
-## Usage Examples
+## ✨ Features
 
 ### WP-CLI Commands
 
-#### Environment Information
+Access Query Monitor data directly from the command line:
+
+| Command | Description | Output Formats |
+|---------|-------------|----------------|
+| `wp qm env` | Environment information (PHP, WordPress, Database) | table, json, yaml, csv |
+| `wp qm db` | Database query monitoring with slow query detection | table, json, csv |
+| `wp qm profile` | Performance profiling (time, memory, queries) | table, json |
+| `wp qm http` | HTTP request monitoring | table, json |
+| `wp qm hooks` | WordPress hooks tracking | table, json |
+| `wp qm errors` | PHP error monitoring | table, json |
+
+### REST API Endpoints
+
+Access Query Monitor data programmatically:
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/wp-json/query-monitor/v1/environment` | GET | Environment information |
+| `/wp-json/query-monitor/v1/database` | POST | Database queries |
+| `/wp-json/query-monitor/v1/profile` | POST | Performance profile |
+| `/wp-json/query-monitor/v1/http` | POST | HTTP requests |
+| `/wp-json/query-monitor/v1/hooks` | POST | Hooks information |
+| `/wp-json/query-monitor/v1/errors` | POST | PHP errors |
+
+### Key Capabilities
+
+- 🔍 **No Code Duplication** - Leverages existing Query Monitor collectors
+- 🚀 **Multiple Output Formats** - Table, JSON, CSV, YAML
+- 🎯 **Slow Query Detection** - Configurable thresholds
+- 📊 **Performance Metrics** - Time, memory, database stats
+- 🔐 **Secure REST API** - WordPress Application Password authentication
+- 🧪 **CI/CD Ready** - JSON output for automation
+- 📝 **Comprehensive Logging** - Track all WordPress operations
+
+---
+
+## 📦 Requirements
+
+- **WordPress**: 6.0 or higher
+- **PHP**: 7.4 or higher
+- **WP-CLI**: 2.5 or higher (for CLI commands)
+- **Query Monitor**: 3.16 or higher (**required dependency**)
+
+---
+
+## 🚀 Installation
+
+### Method 1: Via Git Clone
 
 ```bash
-# Display environment info
+# Navigate to WordPress plugins directory
+cd wp-content/plugins
+
+# Clone the repository
+git clone https://github.com/MervinPraison/query-monitor-cli.git
+
+# Install Query Monitor (if not already installed)
+wp plugin install query-monitor --activate
+
+# Activate Query Monitor CLI
+wp plugin activate query-monitor-cli
+```
+
+### Method 2: Manual Installation
+
+1. Download the latest release from [GitHub](https://github.com/MervinPraison/query-monitor-cli/releases)
+2. Extract to `wp-content/plugins/query-monitor-cli`
+3. Install and activate Query Monitor: `wp plugin install query-monitor --activate`
+4. Activate Query Monitor CLI: `wp plugin activate query-monitor-cli`
+
+### Verification
+
+```bash
+# Verify installation
+wp plugin list | grep query-monitor
+
+# Test the plugin
+wp qm env
+```
+
+---
+
+## ⚡ Quick Start
+
+### 1. Basic Commands
+
+```bash
+# Check environment
 wp qm env
 
-# Output as JSON
+# Monitor database queries
+wp qm db post list
+
+# Profile performance
+wp qm profile post list
+```
+
+### 2. JSON Output for Automation
+
+```bash
+# Get JSON output
+wp qm profile post list --format=json
+
+# Save to file
+wp qm db post list --format=json > queries.json
+```
+
+### 3. Slow Query Detection
+
+```bash
+# Find queries slower than 0.1 seconds
+wp qm db post list --slow-only --threshold=0.1
+```
+
+### 4. REST API Access
+
+```bash
+# Create application password
+wp user application-password create 1 "QM CLI" --porcelain
+
+# Test REST API
+curl -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/environment"
+```
+
+---
+
+## 💻 WP-CLI Commands
+
+
+### `wp qm env` - Environment Information
+
+Display PHP, WordPress, and database environment information.
+
+**Syntax:**
+```bash
+wp qm env [--format=<format>]
+```
+
+**Options:**
+- `--format=<format>` - Output format: table (default), json, yaml, csv
+
+**Examples:**
+```bash
+# Table format (default)
+wp qm env
+
+# JSON format
 wp qm env --format=json
+
+# YAML format
+wp qm env --format=yaml
 ```
 
 **Output:**
@@ -91,44 +227,80 @@ Server: MySQL
 Version: 8.0.35
 ```
 
-#### Database Query Monitoring
+---
 
+### `wp qm db` - Database Query Monitoring
+
+Monitor database queries with detailed metrics and slow query detection.
+
+**Syntax:**
 ```bash
-# Monitor current database queries
+wp qm db [<command>...] [--format=<format>] [--slow-only] [--threshold=<seconds>]
+```
+
+**Options:**
+- `[<command>...]` - WP-CLI command to monitor (optional)
+- `--format=<format>` - Output format: table (default), json, csv
+- `--slow-only` - Show only slow queries
+- `--threshold=<seconds>` - Slow query threshold in seconds (default: 0.05)
+
+**Examples:**
+```bash
+# Monitor current queries
 wp qm db
 
-# Monitor queries from a specific command
+# Monitor specific command
 wp qm db post list
 
-# Show only slow queries (over 0.1 seconds)
+# Find slow queries
 wp qm db post list --slow-only --threshold=0.1
 
-# Output as JSON
+# JSON output for automation
 wp qm db post list --format=json
+
+# Monitor complex operations
+wp qm db post create --post_title="Test" --post_content="Content"
 ```
 
 **Output:**
 ```
 Total Queries: 4 | Total Time: 0.0272s
 
-#	Time	Type	Caller	SQL
-1	0.0167s	SELECT	WP_Query->get_posts	SELECT   wp_posts.*...
-2	0.0027s	SELECT	WP_Term_Query->get_terms	SELECT DISTINCT t.term_id...
-3	0.0005s	SELECT	_prime_term_caches	SELECT t.*, tt.* FROM wp_terms...
-4	0.0072s	SELECT	update_meta_cache	SELECT post_id, meta_key...
+#   Time      Type    Caller                    SQL
+1   0.0167s   SELECT  WP_Query->get_posts      SELECT wp_posts.* FROM...
+2   0.0027s   SELECT  WP_Term_Query->get_terms SELECT DISTINCT t.term_id...
+3   0.0005s   SELECT  _prime_term_caches       SELECT t.*, tt.* FROM...
+4   0.0072s   SELECT  update_meta_cache        SELECT post_id, meta_key...
 ```
 
-#### Performance Profiling
+---
 
+### `wp qm profile` - Performance Profiling
+
+Profile command performance including execution time, memory usage, and database metrics.
+
+**Syntax:**
+```bash
+wp qm profile [<command>...] [--format=<format>]
+```
+
+**Options:**
+- `[<command>...]` - WP-CLI command to profile (optional)
+- `--format=<format>` - Output format: table (default), json
+
+**Examples:**
 ```bash
 # Profile current state
 wp qm profile
 
-# Profile a specific command
+# Profile specific command
 wp qm profile post list
 
-# Profile with JSON output
-wp qm profile cache flush --format=json
+# Profile cache operations
+wp qm profile cache flush
+
+# JSON output
+wp qm profile post list --format=json
 ```
 
 **Output:**
@@ -142,77 +314,133 @@ Database Queries: 4
 Database Time: 0.0070s
 ```
 
-#### HTTP Request Monitoring
+---
 
+### `wp qm http` - HTTP Request Monitoring
+
+Monitor HTTP requests made during command execution.
+
+**Syntax:**
 ```bash
-# Monitor HTTP requests
+wp qm http [<command>...] [--format=<format>]
+```
+
+**Options:**
+- `[<command>...]` - WP-CLI command to monitor (optional)
+- `--format=<format>` - Output format: table (default), json
+
+**Examples:**
+```bash
+# Monitor current HTTP requests
 wp qm http
 
-# Monitor HTTP requests from a command
-wp qm http plugin update --all
+# Monitor plugin updates
+wp qm http plugin update --all --dry-run
 
 # JSON output
 wp qm http --format=json
 ```
 
-#### Hook Tracking
+**Output:**
+```
+Total HTTP Requests: 2
 
+URL                              Method  Status  Time
+https://api.wordpress.org/...    GET     200     0.1234s
+https://downloads.wordpress...   GET     200     0.5678s
+```
+
+---
+
+### `wp qm hooks` - WordPress Hooks Tracking
+
+Track WordPress action and filter hooks.
+
+**Syntax:**
 ```bash
-# Track hooks
+wp qm hooks [<command>...] [--format=<format>]
+```
+
+**Options:**
+- `[<command>...]` - WP-CLI command to monitor (optional)
+- `--format=<format>` - Output format: table (default), json
+
+**Examples:**
+```bash
+# Track current hooks
 wp qm hooks
 
-# Track hooks from a command
+# Track hooks during post creation
 wp qm hooks post create --post_title="Test"
 
-# JSON output
+# JSON output for analysis
 wp qm hooks --format=json
 ```
 
-#### PHP Error Monitoring
+---
 
+### `wp qm errors` - PHP Error Monitoring
+
+Monitor PHP errors, warnings, and notices.
+
+**Syntax:**
 ```bash
-# Check for PHP errors
+wp qm errors [<command>...] [--format=<format>]
+```
+
+**Options:**
+- `[<command>...]` - WP-CLI command to monitor (optional)
+- `--format=<format>` - Output format: table (default), json
+
+**Examples:**
+```bash
+# Check for errors
 wp qm errors
 
-# Monitor errors from a command
+# Monitor plugin activation
 wp qm errors plugin activate my-plugin
 
 # JSON output
 wp qm errors --format=json
 ```
 
-### REST API Usage
-
-#### Authentication
-
-REST API endpoints require authentication. Use WordPress Application Passwords:
-
-```bash
-# Create an application password
-wp user application-password create 1 "API Access" --porcelain
+**Output:**
+```
+Total PHP Errors: 0
+Success: No PHP errors found!
 ```
 
-#### Example Requests
+---
 
-**Environment Information:**
+## 🌐 REST API Endpoints
+
+### Authentication
+
+All REST API endpoints require authentication using WordPress Application Passwords.
+
+**Create Application Password:**
 ```bash
-curl -u "username:app_password" \
-  "https://example.com/wp-json/query-monitor/v1/environment"
+wp user application-password create 1 "QM CLI API" --porcelain
 ```
 
-**Database Queries:**
+**Use in Requests:**
 ```bash
-curl -X POST -u "username:app_password" \
-  "https://example.com/wp-json/query-monitor/v1/database"
+curl -u "username:app_password" "https://site.com/wp-json/query-monitor/v1/..."
 ```
 
-**Performance Profile:**
+---
+
+### GET /wp-json/query-monitor/v1/environment
+
+Get environment information.
+
+**Request:**
 ```bash
-curl -X POST -u "username:app_password" \
-  "https://example.com/wp-json/query-monitor/v1/profile"
+curl -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/environment"
 ```
 
-**Response Format:**
+**Response:**
 ```json
 {
   "success": true,
@@ -220,262 +448,760 @@ curl -X POST -u "username:app_password" \
     "php": {
       "version": "8.4.6",
       "memory_limit": "256M",
-      "max_execution_time": "30"
+      "max_execution_time": "30",
+      "extensions": ["mysqli", "curl", "gd", ...]
     },
     "wordpress": {
       "version": "6.8.3",
-      "multisite": false
+      "multisite": false,
+      "debug_mode": false
     },
     "database": {
       "extension": "mysqli",
       "server": "MySQL",
-      "version": "8.0.35"
+      "version": "8.0.35",
+      "database": "wordpress"
+    },
+    "server": {
+      "software": "nginx",
+      "version": "1.21.0"
     }
   }
 }
 ```
 
-## Command Reference
+---
 
-### `wp qm env`
+### POST /wp-json/query-monitor/v1/database
 
-Display environment information.
+Get database query information.
 
-**Options:**
-- `--format=<format>` - Output format (table, json, yaml, csv). Default: table
-
-**Examples:**
+**Request:**
 ```bash
-wp qm env
-wp qm env --format=json
+curl -X POST -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/database"
 ```
 
-### `wp qm db`
-
-Monitor database queries.
-
-**Options:**
-- `[<command>...]` - WP-CLI command to monitor (optional)
-- `--format=<format>` - Output format (table, json, csv). Default: table
-- `--slow-only` - Show only slow queries
-- `--threshold=<seconds>` - Slow query threshold. Default: 0.05
-
-**Examples:**
-```bash
-wp qm db
-wp qm db post list
-wp qm db post list --slow-only --threshold=0.1
-wp qm db post list --format=json
-```
-
-### `wp qm profile`
-
-Profile command performance.
-
-**Options:**
-- `[<command>...]` - WP-CLI command to profile (optional)
-- `--format=<format>` - Output format (table, json). Default: table
-
-**Examples:**
-```bash
-wp qm profile
-wp qm profile post list
-wp qm profile cache flush --format=json
-```
-
-### `wp qm http`
-
-Monitor HTTP requests.
-
-**Options:**
-- `[<command>...]` - WP-CLI command to monitor (optional)
-- `--format=<format>` - Output format (table, json). Default: table
-
-**Examples:**
-```bash
-wp qm http
-wp qm http plugin update --all
-wp qm http --format=json
-```
-
-### `wp qm hooks`
-
-Monitor WordPress hooks.
-
-**Options:**
-- `[<command>...]` - WP-CLI command to monitor (optional)
-- `--format=<format>` - Output format (table, json). Default: table
-
-**Examples:**
-```bash
-wp qm hooks
-wp qm hooks post create --post_title="Test"
-wp qm hooks --format=json
-```
-
-### `wp qm errors`
-
-Monitor PHP errors.
-
-**Options:**
-- `[<command>...]` - WP-CLI command to monitor (optional)
-- `--format=<format>` - Output format (table, json). Default: table
-
-**Examples:**
-```bash
-wp qm errors
-wp qm errors plugin activate my-plugin
-wp qm errors --format=json
-```
-
-## Use Cases
-
-### Development
-
-- **Debug slow queries** during development
-- **Profile performance** of custom code
-- **Monitor HTTP requests** to external APIs
-- **Track hook execution** order
-
-### Testing
-
-- **Automated testing** with JSON output
-- **Performance regression** detection
-- **Error monitoring** in CI/CD pipelines
-- **Query optimization** validation
-
-### DevOps
-
-- **Deployment scripts** with performance monitoring
-- **Health checks** via REST API
-- **Automated profiling** of critical operations
-- **Performance baselines** for comparison
-
-## Integration Examples
-
-### CI/CD Pipeline
-
-```bash
-#!/bin/bash
-# Check for slow queries in deployment
-SLOW_QUERIES=$(wp qm db post list --slow-only --threshold=0.1 --format=json | jq 'length')
-
-if [ "$SLOW_QUERIES" -gt 0 ]; then
-  echo "Warning: Found $SLOW_QUERIES slow queries"
-  exit 1
-fi
-```
-
-### Performance Monitoring Script
-
-```bash
-#!/bin/bash
-# Profile critical operations
-wp qm profile "cache flush" --format=json > profile-cache.json
-wp qm profile "post list" --format=json > profile-posts.json
-
-# Compare with baseline
-```
-
-### REST API Monitoring
-
-```javascript
-// Node.js example
-const axios = require('axios');
-
-async function checkPerformance() {
-  const response = await axios.post(
-    'https://example.com/wp-json/query-monitor/v1/profile',
-    {},
-    {
-      auth: {
-        username: 'admin',
-        password: 'app_password'
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total_queries": 4,
+    "total_time": 0.0272,
+    "queries": [
+      {
+        "index": 1,
+        "time": 0.0167,
+        "type": "SELECT",
+        "caller": "WP_Query->get_posts",
+        "sql": "SELECT wp_posts.* FROM...",
+        "component": "WordPress Core"
       }
-    }
-  );
-  
-  console.log('Execution Time:', response.data.data.execution_time);
-  console.log('Database Queries:', response.data.data.db_queries);
+    ]
+  }
 }
 ```
 
-## Troubleshooting
+---
 
-### "Query Monitor plugin is not active"
+### POST /wp-json/query-monitor/v1/profile
 
-Make sure Query Monitor is installed and activated:
+Get performance profile.
+
+**Request:**
 ```bash
+curl -X POST -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/profile"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "execution_time": 0.0203,
+    "memory_peak": 67108864,
+    "memory_used": 3145728,
+    "memory_limit": 268435456,
+    "db_queries": 4,
+    "db_time": 0.0070
+  }
+}
+```
+
+---
+
+### POST /wp-json/query-monitor/v1/http
+
+Get HTTP request information.
+
+**Request:**
+```bash
+curl -X POST -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/http"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total_requests": 2,
+    "total_time": 0.6912,
+    "requests": [
+      {
+        "url": "https://api.wordpress.org/...",
+        "method": "GET",
+        "status": "200",
+        "time": 0.1234,
+        "component": "WordPress Core"
+      }
+    ]
+  }
+}
+```
+
+---
+
+### POST /wp-json/query-monitor/v1/hooks
+
+Get WordPress hooks information.
+
+**Request:**
+```bash
+curl -X POST -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/hooks"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total_hooks": 150,
+    "hooks": {
+      "init": [...],
+      "wp_loaded": [...],
+      ...
+    }
+  }
+}
+```
+
+---
+
+### POST /wp-json/query-monitor/v1/errors
+
+Get PHP error information.
+
+**Request:**
+```bash
+curl -X POST -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/errors"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "total_errors": 0,
+    "errors": []
+  }
+}
+```
+
+---
+
+## 📚 Use Cases
+
+### Development
+
+**Debug Slow Queries**
+```bash
+# Find queries taking more than 100ms
+wp qm db post list --slow-only --threshold=0.1
+```
+
+**Profile Custom Code**
+```bash
+# Profile your custom WP-CLI command
+wp qm profile my-custom-command --arg1=value
+```
+
+**Monitor HTTP Requests**
+```bash
+# Track external API calls
+wp qm http my-api-sync-command
+```
+
+**Track Hook Execution**
+```bash
+# See which hooks fire during operation
+wp qm hooks post create --post_title="Test"
+```
+
+---
+
+### Testing & QA
+
+**Automated Performance Testing**
+```bash
+#!/bin/bash
+# performance-test.sh
+
+PROFILE=$(wp qm profile post list --format=json)
+TIME=$(echo $PROFILE | jq -r '.execution_time')
+
+if (( $(echo "$TIME > 0.5" | bc -l) )); then
+  echo "FAIL: Execution time $TIME exceeds 0.5s threshold"
+  exit 1
+fi
+
+echo "PASS: Performance acceptable ($TIME seconds)"
+```
+
+**Query Optimization Validation**
+```bash
+#!/bin/bash
+# check-slow-queries.sh
+
+SLOW=$(wp qm db post list --slow-only --threshold=0.1 --format=json | jq 'length')
+
+if [ "$SLOW" -gt 0 ]; then
+  echo "WARNING: Found $SLOW slow queries"
+  wp qm db post list --slow-only --threshold=0.1
+  exit 1
+fi
+
+echo "PASS: No slow queries detected"
+```
+
+**Error Detection**
+```bash
+# Check for PHP errors after deployment
+wp qm errors plugin activate my-plugin --format=json
+```
+
+---
+
+### CI/CD Integration
+
+**GitHub Actions Example**
+```yaml
+name: WordPress Performance Tests
+
+on: [push, pull_request]
+
+jobs:
+  performance:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Setup WordPress
+      run: |
+        # Setup WordPress environment
+        
+    - name: Install Query Monitor CLI
+      run: |
+        cd wp-content/plugins
+        git clone https://github.com/MervinPraison/query-monitor-cli.git
+        wp plugin activate query-monitor-cli
+        
+    - name: Run Performance Tests
+      run: |
+        # Profile critical operations
+        wp qm profile post list --format=json > profile.json
+        
+        # Check for slow queries
+        SLOW=$(wp qm db post list --slow-only --threshold=0.1 --format=json | jq 'length')
+        if [ "$SLOW" -gt 0 ]; then
+          echo "::error::Found $SLOW slow queries"
+          exit 1
+        fi
+        
+    - name: Upload Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: performance-results
+        path: profile.json
+```
+
+**GitLab CI Example**
+```yaml
+performance_test:
+  stage: test
+  script:
+    - wp plugin activate query-monitor-cli
+    - wp qm profile post list --format=json > profile.json
+    - |
+      SLOW=$(wp qm db post list --slow-only --threshold=0.1 --format=json | jq 'length')
+      if [ "$SLOW" -gt 0 ]; then
+        echo "Found $SLOW slow queries"
+        exit 1
+      fi
+  artifacts:
+    paths:
+      - profile.json
+```
+
+---
+
+### DevOps & Monitoring
+
+**Health Check Script**
+```bash
+#!/bin/bash
+# health-check.sh
+
+# Get performance metrics
+PROFILE=$(curl -s -u "$WP_USER:$WP_PASS" \
+  "https://yoursite.com/wp-json/query-monitor/v1/profile")
+
+# Extract metrics
+DB_QUERIES=$(echo $PROFILE | jq -r '.data.db_queries')
+EXEC_TIME=$(echo $PROFILE | jq -r '.data.execution_time')
+
+# Alert if thresholds exceeded
+if [ "$DB_QUERIES" -gt 50 ]; then
+  echo "ALERT: Too many database queries ($DB_QUERIES)"
+fi
+
+if (( $(echo "$EXEC_TIME > 1.0" | bc -l) )); then
+  echo "ALERT: Slow response time ($EXEC_TIME seconds)"
+fi
+```
+
+**Performance Baseline**
+```bash
+#!/bin/bash
+# create-baseline.sh
+
+# Create performance baseline
+wp qm profile post list --format=json > baseline-posts.json
+wp qm profile cache flush --format=json > baseline-cache.json
+wp qm db post list --format=json > baseline-queries.json
+
+echo "Baseline created successfully"
+```
+
+**Deployment Validation**
+```bash
+#!/bin/bash
+# post-deploy-check.sh
+
+echo "Running post-deployment checks..."
+
+# Check for PHP errors
+ERRORS=$(wp qm errors --format=json | jq -r '.data.total_errors')
+if [ "$ERRORS" -gt 0 ]; then
+  echo "ERROR: Found $ERRORS PHP errors"
+  wp qm errors
+  exit 1
+fi
+
+# Validate performance
+PROFILE=$(wp qm profile post list --format=json)
+TIME=$(echo $PROFILE | jq -r '.execution_time')
+
+if (( $(echo "$TIME > 1.0" | bc -l) )); then
+  echo "WARNING: Performance degradation detected"
+  echo "Execution time: $TIME seconds"
+fi
+
+echo "Deployment validation complete"
+```
+
+---
+
+## 🏗️ Architecture
+
+### How It Works
+
+Query Monitor CLI integrates with Query Monitor's existing architecture:
+
+1. **Initialization**
+   - Defines `QM_TESTS` constant to bypass CLI check
+   - Manually loads Query Monitor collector and data files
+   - Applies `qm/collectors` filter to register collectors
+
+2. **Data Collection**
+   - Uses existing Query Monitor collectors (no duplication)
+   - Processes all collectors to ensure dependencies are met
+   - Extracts data from collector data objects
+
+3. **Output Formatting**
+   - Formats data for CLI display (tables, JSON, CSV)
+   - Provides machine-readable output for automation
+   - Maintains consistent structure across commands
+
+### Key Components
+
+**Main Plugin File** (`query-monitor-cli.php`)
+- Plugin initialization
+- Dependency checking
+- Class loading
+
+**Base CLI Class** (`includes/class-qm-cli-base.php`)
+- Query Monitor initialization
+- Collector management
+- Shared utilities
+
+**CLI Commands** (`includes/class-qm-cli-commands.php`)
+- WP-CLI command implementations
+- Output formatting
+- Error handling
+
+**REST API** (`includes/class-qm-rest-api.php`)
+- REST endpoint registration
+- Authentication
+- JSON responses
+
+### Integration Points
+
+```php
+// Initialize Query Monitor in CLI context
+define( 'QM_TESTS', true );
+
+// Load collectors
+$qm = QueryMonitor::init( $qm_file );
+foreach ( glob( $qm_dir . '/collectors/*.php' ) as $file ) {
+    include_once $file;
+}
+
+// Register collectors
+$collectors = apply_filters( 'qm/collectors', array(), $qm );
+foreach ( $collectors as $collector ) {
+    QM_Collectors::add( $collector );
+}
+
+// Process and get data
+QM_Collectors::init()->process();
+$collector = QM_Collectors::get( 'environment' );
+$data = $collector->get_data();
+```
+
+---
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**"Query Monitor plugin is not active"**
+
+Query Monitor must be installed and activated first.
+
+```bash
+# Install Query Monitor
 wp plugin install query-monitor --activate
+
+# Verify installation
+wp plugin list | grep query-monitor
 ```
 
-### "Environment collector not found"
+---
 
-This usually means Query Monitor collectors aren't loading. Try:
-1. Deactivate and reactivate both plugins
-2. Check for PHP errors in debug.log
-3. Verify Query Monitor version is 3.16+
+**"Environment collector not found"**
 
-### REST API returns 401
+This means Query Monitor collectors aren't loading properly.
 
-You need to authenticate with WordPress Application Passwords:
+**Solutions:**
+1. Deactivate and reactivate both plugins:
+   ```bash
+   wp plugin deactivate query-monitor query-monitor-cli
+   wp plugin activate query-monitor query-monitor-cli
+   ```
+
+2. Check for PHP errors:
+   ```bash
+   tail -f wp-content/debug.log
+   ```
+
+3. Verify Query Monitor version:
+   ```bash
+   wp plugin list | grep query-monitor
+   # Should be 3.16 or higher
+   ```
+
+---
+
+**REST API returns 401 Unauthorized**
+
+Authentication is required for all REST API endpoints.
+
+**Solution:**
 ```bash
-wp user application-password create 1 "API Access"
+# Create application password
+wp user application-password create 1 "QM CLI API" --porcelain
+
+# Use in requests
+curl -u "username:APP_PASSWORD_HERE" \
+  "https://yoursite.com/wp-json/query-monitor/v1/environment"
 ```
 
-### No queries recorded
+---
 
-If monitoring a command and no queries show up:
-1. Make sure the command actually runs queries
-2. Try a simple command first: `wp qm db post list`
-3. Check if SAVEQUERIES is defined as false
+**No queries recorded**
 
-## Contributing
+If monitoring a command shows no queries:
 
-Contributions are welcome! Please:
+1. Ensure the command actually runs queries:
+   ```bash
+   # This should show queries
+   wp qm db post list
+   ```
+
+2. Check if SAVEQUERIES is defined as false in wp-config.php
+
+3. Try a simple command first to verify it's working
+
+---
+
+**Command execution fails**
+
+If a monitored command fails:
+
+1. Test the command without monitoring:
+   ```bash
+   wp post list
+   ```
+
+2. Check command syntax
+
+3. Use `--debug` flag:
+   ```bash
+   wp qm db post list --debug
+   ```
+
+---
+
+### Debug Mode
+
+Enable WordPress debug mode for detailed error information:
+
+```php
+// wp-config.php
+define( 'WP_DEBUG', true );
+define( 'WP_DEBUG_LOG', true );
+define( 'WP_DEBUG_DISPLAY', false );
+```
+
+Then check the log:
+```bash
+tail -f wp-content/debug.log
+```
+
+---
+
+## 🧪 Testing
+
+### Manual Testing
+
+**Test Environment Command:**
+```bash
+wp qm env
+# Should display PHP, WordPress, and database info
+```
+
+**Test Database Monitoring:**
+```bash
+wp qm db post list
+# Should show queries with timing information
+```
+
+**Test Performance Profiling:**
+```bash
+wp qm profile post list
+# Should show execution time and memory usage
+```
+
+**Test REST API:**
+```bash
+# Create app password first
+APP_PASS=$(wp user application-password create 1 "Test" --porcelain)
+
+# Test endpoint
+curl -u "admin:$APP_PASS" \
+  "https://yoursite.test/wp-json/query-monitor/v1/environment"
+```
+
+### Automated Testing
+
+**Performance Test Script:**
+```bash
+#!/bin/bash
+# tests/performance-test.sh
+
+echo "Running performance tests..."
+
+# Test 1: Execution time
+PROFILE=$(wp qm profile post list --format=json)
+TIME=$(echo $PROFILE | jq -r '.execution_time')
+
+if (( $(echo "$TIME > 0.5" | bc -l) )); then
+  echo "❌ FAIL: Execution time too slow ($TIME s)"
+  exit 1
+else
+  echo "✅ PASS: Execution time acceptable ($TIME s)"
+fi
+
+# Test 2: Slow queries
+SLOW=$(wp qm db post list --slow-only --threshold=0.1 --format=json | jq 'length')
+
+if [ "$SLOW" -gt 0 ]; then
+  echo "❌ FAIL: Found $SLOW slow queries"
+  exit 1
+else
+  echo "✅ PASS: No slow queries"
+fi
+
+# Test 3: PHP errors
+ERRORS=$(wp qm errors --format=json | jq -r '.data.total_errors')
+
+if [ "$ERRORS" -gt 0 ]; then
+  echo "❌ FAIL: Found $ERRORS PHP errors"
+  exit 1
+else
+  echo "✅ PASS: No PHP errors"
+fi
+
+echo "All tests passed!"
+```
+
+**Run Tests:**
+```bash
+chmod +x tests/performance-test.sh
+./tests/performance-test.sh
+```
+
+### Test Coverage
+
+For detailed testing documentation, see [tests/TESTING.md](tests/TESTING.md).
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how you can help:
+
+### Reporting Issues
+
+1. Check existing issues first
+2. Provide detailed information:
+   - WordPress version
+   - PHP version
+   - Query Monitor version
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Error messages or logs
+
+### Submitting Pull Requests
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes
-4. Add tests
-5. Submit a pull request
+4. Add tests if applicable
+5. Commit with clear messages: `git commit -m "Add feature X"`
+6. Push to your fork: `git push origin feature/my-feature`
+7. Submit a pull request
 
-## Testing
+### Development Setup
 
-See [tests/TESTING.md](tests/TESTING.md) for detailed testing instructions.
+```bash
+# Clone the repository
+git clone https://github.com/MervinPraison/query-monitor-cli.git
+cd query-monitor-cli
 
-## Changelog
+# Create symlink to WordPress
+ln -s $(pwd) /path/to/wordpress/wp-content/plugins/query-monitor-cli
 
-### 0.1.0 (2025-11-08)
-- Initial release
-- WP-CLI commands for all major Query Monitor collectors
-- REST API endpoints for programmatic access
-- Support for JSON, table, CSV output formats
-- Database query monitoring with slow query detection
-- Performance profiling
-- HTTP request monitoring
-- Hook tracking
-- PHP error monitoring
+# Install dependencies
+cd /path/to/wordpress
+wp plugin install query-monitor --activate
+wp plugin activate query-monitor-cli
 
-## License
+# Test your changes
+wp qm env
+```
 
-GPL v2 or later
+### Coding Standards
 
-## Credits
+- Follow WordPress Coding Standards
+- Use meaningful variable and function names
+- Add PHPDoc comments
+- Test your changes thoroughly
 
-- Built on top of [Query Monitor](https://querymonitor.com/) by John Blackbourn
-- Developed by Praison
+---
 
-## Support
+## 📝 Changelog
 
-- [GitHub Issues](https://github.com/praison/query-monitor-cli/issues)
-- [Documentation](https://github.com/praison/query-monitor-cli)
+### Version 0.1.0 (2025-11-08)
 
-## Related Projects
+**Initial Release**
 
-- [Query Monitor](https://wordpress.org/plugins/query-monitor/) - The core debugging plugin
-- [WP-CLI](https://wp-cli.org/) - WordPress command-line interface
+- ✅ WP-CLI commands for all major Query Monitor collectors
+- ✅ REST API endpoints for programmatic access
+- ✅ Multiple output formats (table, JSON, CSV, YAML)
+- ✅ Database query monitoring with slow query detection
+- ✅ Performance profiling (time, memory, queries)
+- ✅ HTTP request monitoring
+- ✅ WordPress hooks tracking
+- ✅ PHP error monitoring
+- ✅ Comprehensive documentation
+- ✅ Testing guide
+- ✅ CI/CD integration examples
+
+---
+
+## 📄 License
+
+This plugin is licensed under the GPL v2 or later.
+
+```
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+```
+
+See [LICENSE](LICENSE) file for full license text.
+
+---
+
+## 👏 Credits
+
+- **Built on top of**: [Query Monitor](https://querymonitor.com/) by [John Blackbourn](https://johnblackbourn.com/)
+- **Developed by**: [Praison](https://praison.com)
+- **Inspired by**: The WordPress developer community
+
+---
+
+## 🔗 Links
+
+- **GitHub Repository**: https://github.com/MervinPraison/query-monitor-cli
+- **Issue Tracker**: https://github.com/MervinPraison/query-monitor-cli/issues
+- **Query Monitor**: https://wordpress.org/plugins/query-monitor/
+- **WP-CLI**: https://wp-cli.org/
+
+---
+
+## 🌟 Support
+
+If you find this plugin helpful, please:
+
+- ⭐ Star the repository on GitHub
+- 🐛 Report bugs and request features
+- 📖 Improve documentation
+- 💻 Contribute code
+- 📢 Share with other WordPress developers
 
 ---
 
 **Made with ❤️ for WordPress developers**
+
