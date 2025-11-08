@@ -1,20 +1,23 @@
-# PHP plugin ignore files
-**/*.phpunit.result.cache
+# Dependencies
 **/vendor/
-**/composer.lock
 **/node_modules/
-*.php
-*.js
-*.json
-*.lock
-*.md
-*.txt
-*.yml
-*.yaml
-*.lock
-*.log
+
+# Build files
+**/*.phpunit.result.cache
+**/composer.lock
+
+# System files
 *.DS_Store
 Thumbs.db
-.DS_Store
-.vscode
-tmp
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+
+# WordPress specific (if needed)
+# wp-content/
+# wp-config.php
