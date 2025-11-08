@@ -60,6 +60,7 @@ Access Query Monitor data directly from the command line:
 
 | Command | Description | Output Formats |
 |---------|-------------|----------------|
+| `wp qm inspect` | **🔍 Complete analysis of a specific post/page/URL** | table, json |
 | `wp qm env` | Environment information (PHP, WordPress, Database) | table, json, yaml, csv |
 | `wp qm db` | Database query monitoring with slow query detection | table, json, csv |
 | `wp qm profile` | Performance profiling (time, memory, queries) | table, json |
@@ -185,6 +186,120 @@ curl -u "username:password" \
 
 ## 💻 WP-CLI Commands
 
+### `wp qm inspect` - Complete Post/Page Analysis 🔍
+
+**The most powerful command** - Inspect a specific post, page, or URL with complete Query Monitor analysis showing ALL available data.
+
+**Syntax:**
+```bash
+wp qm inspect [--post_id=<id>] [--slug=<slug>] [--url=<url>] [--format=<format>] [--collectors=<collectors>]
+```
+
+**Options:**
+- `--post_id=<id>` - Post ID to inspect
+- `--slug=<slug>` - Post slug to inspect  
+- `--url=<url>` - URL path to inspect (e.g., /sample-page/)
+- `--format=<format>` - Output format: table (default), json
+- `--collectors=<collectors>` - Comma-separated list of specific collectors to show (default: all)
+
+**What It Shows:**
+- ✅ **Database Queries** - All queries with timing and callers
+- ✅ **Performance Metrics** - Execution time, memory usage
+- ✅ **HTTP Requests** - External API calls
+- ✅ **Hooks Fired** - WordPress actions and filters
+- ✅ **Assets Loaded** - Scripts and styles
+- ✅ **Cache Operations** - Hits, misses, and operations
+- ✅ **Conditionals** - WordPress conditional tags (is_single, is_page, etc.)
+- ✅ **Request Details** - Matched query, query vars
+- ✅ **Theme Information** - Template file, template hierarchy
+- ✅ **Block Editor** - Block data and timing
+- ✅ **Transients** - Transient operations
+- ✅ **PHP Errors** - Errors, warnings, notices
+- ✅ **Languages** - Translation files loaded
+- ✅ **Timing** - Detailed timing breakdown
+- ✅ And more...
+
+**Examples:**
+```bash
+# Inspect by post ID
+wp qm inspect --post_id=123
+
+# Inspect by slug
+wp qm inspect --slug=sample-page
+
+# Inspect by URL
+wp qm inspect --url=/about/
+
+# Get JSON output for automation
+wp qm inspect --post_id=123 --format=json
+
+# Show only specific collectors
+wp qm inspect --post_id=123 --collectors=db_queries,http,hooks
+
+# Inspect and save to file
+wp qm inspect --slug=sample-page --format=json > page-analysis.json
+```
+
+**Output Example:**
+```
+Inspecting: https://yoursite.com/sample-page/
+
+=== Post Information ===
+ID: 2
+Title: Sample Page
+Type: page
+Status: publish
+
+=== DB QUERIES ===
+Total Queries: 15
+Total Time: 0.0234s
+
+Top 10 Queries:
+1. [0.0045s] SELECT wp_posts.* FROM wp_posts WHERE ID = 2...
+   Caller: WP_Query->get_posts | Component: WordPress Core
+2. [0.0023s] SELECT t.*, tt.* FROM wp_terms AS t...
+   Caller: _prime_term_caches | Component: WordPress Core
+...
+
+=== HTTP ===
+Total HTTP Requests: 2
+1. [GET] https://api.wordpress.org/plugins/info/1.0/ - Status: 200 (0.1234s)
+2. [GET] https://api.wordpress.org/themes/info/1.0/ - Status: 200 (0.0987s)
+
+=== HOOKS ===
+Total Hooks Fired: 156
+Sample Hooks (first 20):
+init, wp_loaded, parse_request, send_headers, parse_query, pre_get_posts...
+
+=== THEME ===
+Theme: twentytwentyfour
+Template: twentytwentyfour
+Template File: /path/to/themes/twentytwentyfour/page.php
+Template Hierarchy: page-2.php, page.php, singular.php, index.php
+
+=== CONDITIONALS ===
+True Conditionals: is_page, is_singular, is_front_page
+
+=== CACHE ===
+Hits: 45 | Misses: 12 | Total: 57
+
+=== BLOCK EDITOR ===
+Total Blocks: 5
+Has Block Context: Yes
+Post Has Blocks: Yes
+
+Success: Inspection complete!
+```
+
+**Use Cases:**
+- 🔍 **Debug specific pages** - See exactly what's happening on a particular page
+- 📊 **Performance analysis** - Identify slow queries or heavy operations
+- 🐛 **Troubleshooting** - Find errors or issues on specific posts
+- 📈 **Optimization** - Analyze and optimize page load performance
+- 🧪 **Testing** - Validate changes to specific pages
+- 📝 **Documentation** - Generate detailed reports for pages
+
+---
 
 ### `wp qm env` - Environment Information
 
