@@ -98,6 +98,35 @@ class QM_REST_API {
 				),
 			),
 		) );
+		
+		// Inspect endpoint - Complete post/page analysis
+		register_rest_route( self::NAMESPACE, '/inspect', array(
+			'methods' => 'GET',
+			'callback' => array( __CLASS__, 'get_inspect' ),
+			'permission_callback' => array( __CLASS__, 'check_permission' ),
+			'args' => array(
+				'post_id' => array(
+					'required' => false,
+					'type' => 'integer',
+					'description' => 'Post ID to inspect',
+				),
+				'slug' => array(
+					'required' => false,
+					'type' => 'string',
+					'description' => 'Post slug to inspect',
+				),
+				'url' => array(
+					'required' => false,
+					'type' => 'string',
+					'description' => 'URL path to inspect',
+				),
+				'collectors' => array(
+					'required' => false,
+					'type' => 'string',
+					'description' => 'Comma-separated list of collectors to include',
+				),
+			),
+		) );
 	}
 	
 	/**
@@ -332,6 +361,220 @@ class QM_REST_API {
 				'hooks' => $data->hooks ?? array(),
 			),
 		) );
+	}
+	
+	/**
+	 * Get complete inspection data for a post/page/URL
+	 */
+	public static function get_inspect( $request ) {
+		self::init_qm();
+		
+		// Get parameters
+		$post_id = $request->get_param( 'post_id' );
+		$slug = $request->get_param( 'slug' );
+		$url = $request->get_param( 'url' );
+		$collectors_filter = $request->get_param( 'collectors' );
+		
+		// Validate that at least one identifier is provided
+		if ( ! $post_id && ! $slug && ! $url ) {
+			return new WP_Error(
+				'missing_parameter',
+				'Please specify post_id, slug, or url parameter',
+				array( 'status' => 400 )
+			);
+		}
+		
+		// Get post ID from slug if provided
+		if ( $slug && ! $post_id ) {
+			$post = get_page_by_path( $slug, OBJECT, array( 'post', 'page' ) );
+			if ( ! $post ) {
+				return new WP_Error(
+					'post_not_found',
+					sprintf( 'Post not found with slug: %s', $slug ),
+					array( 'status' => 404 )
+				);
+			}
+			$post_id = $post->ID;
+			$url = get_permalink( $post_id );
+		}
+		
+		// Get URL from post ID if provided
+		if ( $post_id && ! $url ) {
+			$url = get_permalink( $post_id );
+			if ( ! $url ) {
+				return new WP_Error(
+					'invalid_post',
+					sprintf( 'Could not get URL for post ID: %s', $post_id ),
+					array( 'status' => 404 )
+				);
+			}
+		}
+		
+		// Parse collectors filter
+		$collectors_array = $collectors_filter ? explode( ',', $collectors_filter ) : null;
+		
+		// Simulate loading the post/page
+		if ( $post_id ) {
+			global $post, $wp_query;
+			$post = get_post( $post_id );
+			if ( $post ) {
+				setup_postdata( $post );
+				$wp_query->is_single = true;
+				$wp_query->is_singular = true;
+			}
+		}
+		
+		// Process all collectors
+		QM_Collectors::init()->process();
+		
+		// Get all available collectors
+		$all_collectors = QM_Collectors::init();
+		
+		$report = array(
+			'url' => $url,
+			'post_id' => $post_id,
+			'collectors' => array(),
+		);
+		
+		// Add post information if available
+		if ( $post_id ) {
+			$post_obj = get_post( $post_id );
+			if ( $post_obj ) {
+				$report['post'] = array(
+					'ID' => $post_obj->ID,
+					'title' => $post_obj->post_title,
+					'type' => $post_obj->post_type,
+					'status' => $post_obj->post_status,
+					'slug' => $post_obj->post_name,
+				);
+			}
+		}
+		
+		// Collect data from all collectors
+		foreach ( $all_collectors as $collector ) {
+			$collector_id = $collector->id;
+			
+			// Skip if filtering and this collector is not in the list
+			if ( $collectors_array && ! in_array( $collector_id, $collectors_array ) ) {
+				continue;
+			}
+			
+			$data = $collector->get_data();
+			
+			if ( ! $data ) {
+				continue;
+			}
+			
+			$report['collectors'][ $collector_id ] = self::format_collector_data( $collector_id, $data );
+		}
+		
+		return rest_ensure_response( array(
+			'success' => true,
+			'data' => $report,
+		) );
+	}
+	
+	/**
+	 * Format collector data for API response
+	 */
+	private static function format_collector_data( $collector_id, $data ) {
+		$formatted = array(
+			'collector' => $collector_id,
+			'data' => array(),
+		);
+		
+		// Extract relevant data based on collector type
+		switch ( $collector_id ) {
+			case 'db_queries':
+				if ( isset( $data->queries ) ) {
+					$formatted['data'] = array(
+						'total_queries' => count( $data->queries ),
+						'total_time' => $data->total_time ?? 0,
+						'queries' => array_map( function( $query ) {
+							return array(
+								'sql' => $query['sql'] ?? '',
+								'time' => $query['ltime'] ?? 0,
+								'caller' => $query['caller'] ?? '',
+								'component' => $query['component'] ?? '',
+								'type' => $query['type'] ?? '',
+							);
+						}, $data->queries ),
+					);
+				}
+				break;
+				
+			case 'http':
+				if ( isset( $data->http ) ) {
+					$formatted['data'] = array(
+						'total_requests' => count( $data->http ),
+						'requests' => array_map( function( $request ) {
+							return array(
+								'url' => $request['url'] ?? '',
+								'method' => $request['args']['method'] ?? 'GET',
+								'response_code' => $request['response']['code'] ?? 0,
+								'time' => ( $request['end'] ?? 0 ) - ( $request['start'] ?? 0 ),
+							);
+						}, $data->http ),
+					);
+				}
+				break;
+				
+			case 'hooks':
+				if ( isset( $data->hooks ) ) {
+					$formatted['data'] = array(
+						'total_hooks' => count( $data->hooks ),
+						'hooks' => array_keys( $data->hooks ),
+					);
+				}
+				break;
+				
+			case 'conditionals':
+				$formatted['data'] = get_object_vars( $data );
+				break;
+				
+			case 'request':
+				$formatted['data'] = array(
+					'matched_query' => $data->request['matched_query'] ?? '',
+					'matched_rule' => $data->request['matched_rule'] ?? '',
+					'query_vars' => $data->request['query_vars'] ?? array(),
+				);
+				break;
+				
+			case 'theme':
+				if ( isset( $data->stylesheet ) ) {
+					$formatted['data'] = array(
+						'theme' => $data->stylesheet,
+						'template' => $data->template,
+						'template_file' => $data->template_file ?? '',
+						'template_hierarchy' => $data->template_hierarchy ?? array(),
+					);
+				}
+				break;
+				
+			case 'php_errors':
+				if ( isset( $data->errors ) ) {
+					$formatted['data'] = array(
+						'total_errors' => count( $data->errors ),
+						'errors' => $data->errors,
+					);
+				}
+				break;
+				
+			case 'cache':
+				$formatted['data'] = array(
+					'hits' => $data->stats['hits'] ?? 0,
+					'misses' => $data->stats['misses'] ?? 0,
+					'total' => $data->stats['total'] ?? 0,
+				);
+				break;
+				
+			default:
+				// Generic data extraction
+				$formatted['data'] = get_object_vars( $data );
+				break;
+		}
+		
+		return $formatted;
 	}
 	
 	/**

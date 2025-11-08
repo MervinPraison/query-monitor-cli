@@ -74,6 +74,7 @@ Access Query Monitor data programmatically:
 
 | Endpoint | Method | Description |
 |----------|--------|-------------|
+| `/wp-json/query-monitor/v1/inspect` | GET | **🔍 Complete post/page analysis** |
 | `/wp-json/query-monitor/v1/environment` | GET | Environment information |
 | `/wp-json/query-monitor/v1/database` | POST | Database queries |
 | `/wp-json/query-monitor/v1/profile` | POST | Performance profile |
@@ -95,10 +96,24 @@ Access Query Monitor data programmatically:
 
 ## 📦 Requirements
 
+### ⚠️ Required Dependencies
+
+- **Query Monitor Plugin**: 3.16 or higher
+  - **This plugin will NOT work without Query Monitor installed and activated**
+  - Install from: https://wordpress.org/plugins/query-monitor/
+  - Or via WP-CLI: `wp plugin install query-monitor --activate`
+
+### System Requirements
+
 - **WordPress**: 6.0 or higher
 - **PHP**: 7.4 or higher
-- **WP-CLI**: 2.5 or higher (for CLI commands)
-- **Query Monitor**: 3.16 or higher (**required dependency**)
+- **WP-CLI**: 2.5 or higher (for CLI commands only)
+
+### Dependency Check
+
+The plugin automatically checks for Query Monitor on activation:
+- ✅ If Query Monitor is active: Plugin works normally
+- ❌ If Query Monitor is missing: Admin notice displayed, features disabled
 
 ---
 
@@ -542,6 +557,119 @@ wp user application-password create 1 "QM CLI API" --porcelain
 ```bash
 curl -u "username:app_password" "https://site.com/wp-json/query-monitor/v1/..."
 ```
+
+---
+
+### GET /wp-json/query-monitor/v1/inspect 🔍
+
+**Complete post/page analysis** - Get ALL Query Monitor data for a specific post, page, or URL.
+
+**Parameters:**
+- `post_id` (integer, optional) - Post ID to inspect
+- `slug` (string, optional) - Post slug to inspect
+- `url` (string, optional) - URL path to inspect
+- `collectors` (string, optional) - Comma-separated list of collectors to include
+
+**Request Examples:**
+```bash
+# Inspect by post ID
+curl -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/inspect?post_id=123"
+
+# Inspect by slug
+curl -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/inspect?slug=sample-page"
+
+# Inspect with specific collectors only
+curl -u "username:password" \
+  "https://yoursite.com/wp-json/query-monitor/v1/inspect?post_id=123&collectors=db_queries,http,hooks"
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "url": "https://yoursite.com/sample-page/",
+    "post_id": 2,
+    "post": {
+      "ID": 2,
+      "title": "Sample Page",
+      "type": "page",
+      "status": "publish",
+      "slug": "sample-page"
+    },
+    "collectors": {
+      "db_queries": {
+        "collector": "db_queries",
+        "data": {
+          "total_queries": 15,
+          "total_time": 0.0234,
+          "queries": [...]
+        }
+      },
+      "http": {
+        "collector": "http",
+        "data": {
+          "total_requests": 2,
+          "requests": [...]
+        }
+      },
+      "hooks": {
+        "collector": "hooks",
+        "data": {
+          "total_hooks": 156,
+          "hooks": ["init", "wp_loaded", ...]
+        }
+      },
+      "conditionals": {
+        "collector": "conditionals",
+        "data": {
+          "is_page": true,
+          "is_singular": true,
+          "is_front_page": true
+        }
+      },
+      "theme": {
+        "collector": "theme",
+        "data": {
+          "theme": "twentytwentyfour",
+          "template": "twentytwentyfour",
+          "template_file": "/path/to/page.php",
+          "template_hierarchy": ["page-2.php", "page.php", "singular.php"]
+        }
+      },
+      "cache": {
+        "collector": "cache",
+        "data": {
+          "hits": 45,
+          "misses": 12,
+          "total": 57
+        }
+      }
+      // ... and 15+ more collectors
+    }
+  }
+}
+```
+
+**Available Collectors:**
+- `db_queries` - Database queries
+- `http` - HTTP requests
+- `hooks` - WordPress hooks
+- `conditionals` - Conditional tags
+- `theme` - Theme information
+- `cache` - Object cache stats
+- `php_errors` - PHP errors
+- `block_editor` - Block editor data
+- `transients` - Transient operations
+- `timing` - Performance timing
+- `overview` - Performance overview
+- `assets_scripts` - Loaded scripts
+- `assets_styles` - Loaded styles
+- `request` - Request details
+- `environment` - Environment info
+- And more...
 
 ---
 
