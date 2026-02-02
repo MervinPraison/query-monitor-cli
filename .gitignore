@@ -21,3 +21,4 @@ tmp/
 # WordPress specific (if needed)
 # wp-content/
 # wp-config.php
+tmp/*
