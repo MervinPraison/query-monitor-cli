@@ -1,7 +1,7 @@
-=== Query Monitor CLI ===
+=== Praison Debug CLI for Query Monitor ===
 Contributors: mervinpraison
 Donate link: https://praison.ai/
-Tags: query-monitor, debug, performance, cli, rest-api
+Tags: debug, performance, cli, rest-api, profiling
 Requires at least: 6.7
 Tested up to: 6.9
 Stable tag: 0.1.0
@@ -13,7 +13,7 @@ WP-CLI commands and REST API endpoints for Query Monitor debugging.
 
 == Description ==
 
-Query Monitor CLI brings the power of Query Monitor to the command line and REST API.
+Praison Debug CLI for Query Monitor brings the power of Query Monitor to the command line and REST API.
 
 **Features:**
 
@@ -36,18 +36,18 @@ Query Monitor CLI brings the power of Query Monitor to the command line and REST
 
 **REST API Endpoints:**
 
-* `GET /query-monitor/v1/environment` - Get environment info
-* `POST /query-monitor/v1/database` - Get database queries
-* `POST /query-monitor/v1/profile` - Get performance profile
-* `POST /query-monitor/v1/http` - Get HTTP requests
-* `POST /query-monitor/v1/hooks` - Get hooks info
-* `POST /query-monitor/v1/errors` - Get PHP errors
-* `GET /query-monitor/v1/inspect` - Inspect post/page/URL
+* `GET /praison-qmcli/v1/environment` - Get environment info
+* `POST /praison-qmcli/v1/database` - Get database queries
+* `POST /praison-qmcli/v1/profile` - Get performance profile
+* `POST /praison-qmcli/v1/http` - Get HTTP requests
+* `POST /praison-qmcli/v1/hooks` - Get hooks info
+* `POST /praison-qmcli/v1/errors` - Get PHP errors
+* `GET /praison-qmcli/v1/inspect` - Inspect post/page/URL
 
 == Installation ==
 
 1. Install and activate the Query Monitor plugin
-2. Upload the `query-monitor-cli` folder to `/wp-content/plugins/`
+2. Upload the plugin folder to `/wp-content/plugins/`
 3. Activate the plugin through the 'Plugins' menu in WordPress
 4. Use WP-CLI commands: `wp qm env`
 
