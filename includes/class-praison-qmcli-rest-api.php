@@ -152,6 +152,7 @@ class Praison_QMCLI_REST_API
         }
 
         if (!defined('QM_TESTS')) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- QM_TESTS is a Query Monitor constant.
             define('QM_TESTS', true);
         }
 
@@ -179,6 +180,7 @@ class Praison_QMCLI_REST_API
             }
 
             // Now apply the filter to register collectors
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- qm/collectors is a Query Monitor hook.
             $collectors = apply_filters('qm/collectors', array(), $qm);
             foreach ($collectors as $collector) {
                 QM_Collectors::add($collector);

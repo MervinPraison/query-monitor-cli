@@ -3,7 +3,7 @@
  * Plugin Name: Praison Debug CLI for Query Monitor
  * Plugin URI: https://github.com/MervinPraison/query-monitor-cli
  * Description: WP-CLI commands and REST API endpoints for Query Monitor debugging
- * Version: 0.1.0
+ * Version: 0.3.0
  * Requires at least: 6.7
  * Requires PHP: 7.4
  * Requires Plugins: query-monitor
@@ -11,14 +11,14 @@
  * Author URI: https://praison.ai
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: praison-cli-for-query-monitor
+ * Text Domain: query-monitor-cli
  */
 
 if (!defined('ABSPATH')) {
 	exit;
 }
 
-define('PRAISON_QMCLI_VERSION', '0.1.0');
+define('PRAISON_QMCLI_VERSION', '0.3.0');
 define('PRAISON_QMCLI_PLUGIN_DIR', plugin_dir_path(__FILE__));
 define('PRAISON_QMCLI_PLUGIN_URL', plugin_dir_url(__FILE__));
 
@@ -30,8 +30,8 @@ function praison_qmcli_check_requirements()
 	if (!class_exists('QueryMonitor')) {
 		add_action('admin_notices', function () {
 			echo '<div class="notice notice-error"><p>';
-			echo '<strong>' . esc_html__('Praison Debug CLI for Query Monitor:', 'praison-cli-for-query-monitor') . '</strong> ';
-			echo esc_html__('Requires Query Monitor plugin to be installed and activated.', 'praison-cli-for-query-monitor');
+			echo '<strong>' . esc_html__('Praison Debug CLI for Query Monitor:', 'query-monitor-cli') . '</strong> ';
+			echo esc_html__('Requires Query Monitor plugin to be installed and activated.', 'query-monitor-cli');
 			echo '</p></div>';
 		});
 		return false;
