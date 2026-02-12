@@ -4,7 +4,7 @@ Donate link: https://praison.ai/
 Tags: debug, performance, cli, rest-api, profiling
 Requires at least: 6.7
 Tested up to: 6.9
-Stable tag: 0.3.0
+Stable tag: 0.5.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -73,7 +73,7 @@ Yes, use `--format=json` for JSON output or `--collectors=db_queries,http` to fi
 
 == Changelog ==
 
-= 0.3.0 =
+= 0.5.0 =
 * Fixed issues identified in WordPress Plugin Directory review
 * Improved code quality and compliance
 
@@ -89,7 +89,7 @@ Yes, use `--format=json` for JSON output or `--collectors=db_queries,http` to fi
 
 == Upgrade Notice ==
 
-= 0.3.0 =
+= 0.5.0 =
 Fixed plugin review issues.
 
 = 0.2.0 =
